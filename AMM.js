@@ -9,32 +9,37 @@ var session = {
 };
 
 
-var poller_ID = null;
-
-
-function get_AMM_messages (callback) {
+function get_AMM_messages (poller_ID, callback) {
     // TODO: FIXME
-    fetch(session.IP + "/messages", {
-        method: 'GET'
-    })
-        .then(response => response.json())
-        .then(json => {
-            var messages = [];
-            for (var item in json) {
-                messages.push(item.message);
-            }
-            return messages;
+    try {
+        fetch(session.IP + "/messages", {
+            method: 'GET'
         })
-        .then(messages => callback(messages));
+            .then(response => response.json())
+            .then(json => {
+                var messages = [];
+                for (var item in json) {
+                    messages.push(item.message);
+                }
+                return messages;
+            })
+            .then(messages => callback(messages));
+    } catch (e) {
+        if (e instanceof TypeError) {
+            clearTimeout(poller_ID);
+        } else {
+            throw e;
+        }
+    }
 }
 
 
 
 function message_poller () {
 
-    get_AMM_messages(messages => session.log.push(...messages));
+    var poller_ID = setTimeout(message_poller, 0);
 
-    poller_ID = setTimeout(message_poller, 0);
+    get_AMM_messages(poller_ID, messages => session.log.push(...messages));
 
 }
 
