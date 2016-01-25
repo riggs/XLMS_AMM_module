@@ -12,16 +12,13 @@ var session = {
 function get_AMM_messages (poller_ID, callback) {
     // TODO: FIXME
     try {
-        fetch(session.IP + "/messages", {
+        fetch(session.IP + "/refresh", {
             method: 'GET'
         })
             .then(response => response.json())
             .then(json => {
-                var messages = [];
-                for (var item in json) {
-                    messages.push(item.message);
-                }
-                return messages;
+                console.log(json);
+                return json;
             })
             .then(messages => callback(messages));
     } catch (e) {
