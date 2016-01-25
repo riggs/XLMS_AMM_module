@@ -1,0 +1,70 @@
+--- # AMM
+name: AMM
+
+interface: AMM.html
+
+hardware:
+  - vendorID: AMM
+    deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,Ingmar_ASL5000
+
+configuration:  # "description" field module is displayed to instructor in LMS.
+    instructor:
+        description:    "Indicates whether the instructor module is required for the scenario."
+        default:        Required
+
+    virtual_patient:
+        description:    "Indicates whether the virutal patient module is required for the scenario."
+        default:        Optional
+
+    patient_monitor:
+        description:    "Indicates whether the patient monitor module is required for the scenario."
+        default:        Required
+
+    IV_arm:
+        description:    "Indicates whether the IV arm module is required for the scenario."
+        default:        Optional
+
+    IV_infusion:
+        description:    "Indicates whether the IV infusion module is required for the scenario."
+        default:        Optional
+
+    escharotomy_arm:
+        description:    "Indicates whether the escharotomy arm module is required for the scenario."
+        default:        Optional
+
+    airway:
+        description:    "Indicates whether the airway module is required for the scenario."
+        default:        Optional
+
+    esophagus:
+        description:    "Indicates whether the esophagus module is required for the scenario."
+        default:        Optional
+
+    RFID_proximity:
+        description:    "Indicates whether the RFID proximity module is required for the scenario."
+        default:        Optional
+
+    smell_machine:
+        description:    "Indicates whether the smell machine module is required for the scenario."
+        default:        Optional
+
+    MATT_legs:
+        description:    "Indicates whether the MATT legs module is required for the scenario."
+        default:        Optional
+
+    Ingmar_ASL5000:
+        description:    "Indicates whether the Ingmar ASL5000 module is required for the scenario."
+        default:        Optional
+
+metrics:    # "description" field is displayed to instructor in LMS.
+    heart_rate:
+        description:   "Patient Heart Rate at end of scenario."
+        values:
+            - unit:         BPM
+              threshold:    minimum
+              default:      40
+
+            - unit:         BPM
+              threshold:    maximum
+              default:      120
+...
