@@ -87,6 +87,8 @@ function init () {
 
             case "start_exercise":
                 // TODO: Send Start message.
+
+                setTimeout(message_poller, 0);
                 break;
 
             case "end_exercise":
