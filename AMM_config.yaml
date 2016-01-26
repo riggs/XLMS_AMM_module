@@ -5,9 +5,13 @@ interface: AMM.html
 
 hardware:
   - vendorID: AMM
-    deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,ASL5000
+    deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,ASL5000,labs
 
 configuration:  # "description" field module is displayed to instructor in LMS.
+    ip_address:
+        description:    "IP address of the core server module to connect to."
+        default:        192.168.1.101
+
     instructor:
         description:    "Indicates whether the instructor module is required for the scenario."
         default:        Required
@@ -54,6 +58,10 @@ configuration:  # "description" field module is displayed to instructor in LMS.
 
     ASL5000:
         description:    "Indicates whether the Ingmar ASL5000 module is required for the scenario."
+        default:        Optional
+
+    labs:
+        description:    "Indicates whether the labs module is required for the scenario."
         default:        Optional
 
 metrics:    # "description" field is displayed to instructor in LMS.

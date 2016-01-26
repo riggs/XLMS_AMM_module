@@ -19,10 +19,12 @@ function get_AMM_messages (poller_ID, callback) {
             method: 'GET'
         })
             .then(response => response.json())
+            /*
             .then(json => {
                 console.log(json);
                 return json;
             })
+            */
             .then(messages => messages[0] != "NOMSGS" ? callback(messages[0]) : null);
     } catch (e) {
         if (e instanceof TypeError) {
@@ -63,7 +65,7 @@ function send_AMM_message (message) {
 
 function scenario_init (scenario) {
 
-    send_AMM_message('KEEP_HISTORY=TRUE');
+    send_AMM_message('KEEP_HISTORY=FALSE');
     send_AMM_message('REGISTER=ADMIN');
     send_AMM_message('REGISTER=ERROR');
     send_AMM_message('REGISTER=ACT');
@@ -71,6 +73,7 @@ function scenario_init (scenario) {
     send_AMM_message('REGISTER=SYS');
     send_AMM_message('REGISTER=SIM_TIME');
     send_AMM_message('REGISTER=STATUS');
+    send_AMM_message('REGISTER=MODULES');
     send_AMM_message('REGISTER=HEART_RATE');
     send_AMM_message('SYS=LOAD_SCENARIO:' + scenario);
     send_AMM_message('ADMIN=REQUEST_STATUS');
