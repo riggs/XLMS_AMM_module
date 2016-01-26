@@ -9,10 +9,13 @@ var session = {
 };
 
 
+session.IP = "192.168.1.101";
+
+
 function get_AMM_messages (poller_ID, callback) {
     // TODO: FIXME
     try {
-        fetch(session.IP + "/refresh", {
+        fetch("http://" + session.IP + "/refresh", {
             method: 'GET'
         })
             .then(response => response.json())
@@ -20,7 +23,7 @@ function get_AMM_messages (poller_ID, callback) {
                 console.log(json);
                 return json;
             })
-            .then(messages => callback(messages));
+            .then(messages => messages[0] != "NOMSGS" ? callback(messages[0]) : null);
     } catch (e) {
         if (e instanceof TypeError) {
             clearTimeout(poller_ID);
@@ -44,10 +47,11 @@ function message_poller () {
 function send_AMM_message (message) {
 
     // FIXME: Actual IP data location.
-    fetch(session.IP + "/action", {
+    fetch('http://' + session.IP + "/action", {
         method: 'POST',
         headers: {
-            "Content-type": "application/json; charset=UTF-8"
+            "Content-type": "application/json; charset=UTF-8",
+            //"no-cors": ""
         },
         body: JSON.stringify({action: message})
     })
@@ -67,10 +71,12 @@ function scenario_init (scenario) {
     send_AMM_message('REGISTER=SYS');
     send_AMM_message('REGISTER=SIM_TIME');
     send_AMM_message('REGISTER=STATUS');
+    send_AMM_message('REGISTER=HEART_RATE');
     send_AMM_message('SYS=LOAD_SCENARIO:' + scenario);
     send_AMM_message('ADMIN=REQUEST_STATUS');
 
 }
+
 
 function init () {
 
@@ -102,10 +108,9 @@ function init () {
             default:
                 console.log(Date.now());
                 console.log(message);
-
         }
     });
-
 }
+
 
 window.addEventListener('load', init);
