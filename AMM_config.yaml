@@ -7,7 +7,7 @@ hardware:
   - vendorID: AMM
     deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,ASL5000,labs
 
-configuration:  # "description" field module is displayed to instructor in LMS.
+configuration:  # "description" field module is displayed to instructor in XLMS.
     ip_address:
         description:    "IP address of the core server module to connect to."
         default:        192.168.1.101
@@ -68,7 +68,7 @@ configuration:  # "description" field module is displayed to instructor in LMS.
         description:    "Indicates whether the labs module is required for the scenario."
         default:        Optional
 
-metrics:    # "description" field is displayed to instructor in LMS.
+metrics:    # "description" & "unit" fields are displayed to instructor in XLMS.
     heart_rate:
         description:   "Patient Heart Rate at end of scenario."
         values:
