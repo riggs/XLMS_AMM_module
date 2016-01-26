@@ -12,6 +12,10 @@ configuration:  # "description" field module is displayed to instructor in LMS.
         description:    "IP address of the core server module to connect to."
         default:        192.168.1.101
 
+    scenario:
+        description:    "Name of scenario file to load."
+        default:        SCENARIO_1
+
     instructor:
         description:    "Indicates whether the instructor module is required for the scenario."
         default:        Required
