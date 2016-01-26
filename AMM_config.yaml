@@ -5,7 +5,7 @@ interface: AMM.html
 
 hardware:
   - vendorID: AMM
-    deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,Ingmar_ASL5000
+    deviceID: instructor,virtual_patient,patient_monitor,IV_arm,IV_infusion,escharotomy_arm,airway,esophagus,RFID_proximity,smell_machine,MATT_legs,ASL5000
 
 configuration:  # "description" field module is displayed to instructor in LMS.
     instructor:
@@ -49,10 +49,10 @@ configuration:  # "description" field module is displayed to instructor in LMS.
         default:        Optional
 
     MATT_legs:
-        description:    "Indicates whether the MATT legs module is required for the scenario."
+        description:    "Indicates whether the KGS MATT legs module is required for the scenario."
         default:        Optional
 
-    Ingmar_ASL5000:
+    ASL5000:
         description:    "Indicates whether the Ingmar ASL5000 module is required for the scenario."
         default:        Optional
 
