@@ -135,7 +135,7 @@ poller_callback = _in_startup;
 
 function message_poller () {
 
-    poller_ID = setTimeout(message_poller, 0);
+    poller_ID = setTimeout(message_poller, 10);
 
     get_AMM_messages(poller_callback);
 
@@ -194,7 +194,7 @@ function scenario_init (scenario) {
     send_AMM_message('ADMIN=REQUEST_STATUS');
     send_AMM_message('ADMIN=REQUEST_MODULES');
 
-    message_poller();
+    //message_poller();
 
 }
 
