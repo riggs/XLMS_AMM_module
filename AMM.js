@@ -190,7 +190,7 @@ function scenario_init (scenario) {
     send_AMM_message('REGISTER=SIM_TIME');
     send_AMM_message('REGISTER=STATUS');
     PHYSIOLOGY_VARIABLES.forEach(variable => send_AMM_message('REGISTER=' + variable));
-    send_AMM_message('SYS=LOAD_SCENARIO:' + scenario);
+    send_AMM_message('ADMIN=LOAD_SCENARIO:' + scenario);
     send_AMM_message('ADMIN=REQUEST_STATUS');
     send_AMM_message('ADMIN=REQUEST_MODULES');
 
