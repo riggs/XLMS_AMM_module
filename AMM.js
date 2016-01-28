@@ -22,7 +22,7 @@ PHYSIOLOGY_VARIABLES.forEach(value => physiology_data[value] = null);
 let ui = {
     start_sim: null,
     end_sim: null,
-    logger: null,
+    log: null,
     physiology: null,
 };
 
