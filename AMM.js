@@ -275,7 +275,7 @@ function init () {
         }
     });
 
-    scenario_init(session.scenario);
+    //scenario_init(session.scenario);
 
 }
 
