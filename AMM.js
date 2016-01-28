@@ -32,6 +32,7 @@ var poller_ID = null;
 
 
 var session = {
+    scenario: "SCENARIO_1",
     log: [],
     attached_modules: [],
     required_modules: [],
@@ -157,7 +158,8 @@ function send_AMM_message (message) {
         body: JSON.stringify({action: message})
     })
         .then(response => response.json())
-        .then(json => console.log(json));
+        //.then(json => console.log(json))
+        ;
 
 }
 
@@ -191,6 +193,8 @@ function scenario_init (scenario) {
     send_AMM_message('SYS=LOAD_SCENARIO:' + scenario);
     send_AMM_message('ADMIN=REQUEST_STATUS');
     send_AMM_message('ADMIN=REQUEST_MODULES');
+
+    message_poller();
 
 }
 
@@ -231,7 +235,7 @@ function ui_init () {
         ui[variable] = div;
     });
 
-    setInterval(physiology_data, 500);
+    setInterval(physiology_display, 500);
 
 }
 
@@ -270,6 +274,9 @@ function init () {
                 console.log(message);
         }
     });
+
+    scenario_init(session.scenario);
+
 }
 
 
