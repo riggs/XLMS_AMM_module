@@ -16,6 +16,7 @@ let PHYSIOLOGY_VARIABLES = [
 
 
 var physiology_data = {};
+// Initialize physiology_data with PHYS_VARS keys, null values.
 PHYSIOLOGY_VARIABLES.forEach(value => physiology_data[value] = null);
 
 
@@ -53,20 +54,16 @@ function get_AMM_messages(callback) {
         method: 'GET'
     })
         .then(response => response.json())
-        /*
-        .then(json => {
-        console.log(json);
-        return json;
-        })
-        */
+        //.then(json => {console.log(json); return json;})
         .then(messages => messages[0] != "NOMSGS" ? callback(messages[0]) : null);
 }
 
 
 function _scenario_running (messages) {
-    session.log.push(Date.now());
     messages.forEach(msg => {
-        session.log.push(msg);
+        if (msg === "NOMSG") {return;}
+        session.log.push([Date.now(), msg]);
+        console.log(msg);
         if (msg === "ERROR=NO_IV") {
             logger("IV not in place.");
         } else if (msg === "ADMIN=FORCE_EXIT") {
@@ -77,6 +74,8 @@ function _scenario_running (messages) {
                 value = split[1];
             if (typeof physiology_data[prefix] !== "undefined") {
                 physiology_data[prefix] = value;
+            } else {
+                logger(msg);
             }
         }
     });
@@ -95,6 +94,7 @@ function _in_startup (messages) {
             case "STATUS":
                 if (value === "READY") {
                     if (session.attached_modules === session.required_modules) {
+                        logger("Sysem Ready");
                         ui.start_sim.disabled = false;
                         poller_callback = _scenario_running;
                     } else if (session.attached_modules.length === 0) {
@@ -110,7 +110,7 @@ function _in_startup (messages) {
                             logger("Missing " + module + " module.");
                             send_AMM_message("ERROR=MISSING:" + module);
                         });
-                        setTimeout(() => send_AMM_message('ADMIN=REQUEST_MODULES'), 2000);
+                        setTimeout(() => send_AMM_message('ADMIN=REQUEST_MODULES'), 500);
                     }
                 }
                 break;
@@ -125,8 +125,8 @@ function _in_startup (messages) {
                 }
                 break;
             default:
-                session.log.push(Date.now());
-                session.log.push(msg);
+                session.log.push([Date.now(), msg]);
+                console.log(msg);
         }
     }
 }
@@ -135,7 +135,7 @@ poller_callback = _in_startup;
 
 function message_poller () {
 
-    poller_ID = setTimeout(message_poller, 10);
+    poller_ID = setTimeout(message_poller, 200);
 
     get_AMM_messages(poller_callback);
 
@@ -148,6 +148,7 @@ function kill_poller () {
 
 
 function send_AMM_message (message) {
+    console.log("Sending: " + message);
 
     // FIXME: Actual IP data location.
     fetch('http://' + session.IP + "/action", {
@@ -182,7 +183,9 @@ function on_sim_end () {
 
 function scenario_init (scenario) {
 
+    logger("Registering XLMS Module.");
     send_AMM_message('KEEP_HISTORY=FALSE');
+    send_AMM_message('MODULE_NAME=XLMS');
     send_AMM_message('REGISTER=ADMIN');
     send_AMM_message('REGISTER=ACT');
     send_AMM_message('REGISTER=ERROR');
@@ -275,7 +278,7 @@ function init () {
         }
     });
 
-    //scenario_init(session.scenario);
+    scenario_init(session.scenario);
 
 }
 
