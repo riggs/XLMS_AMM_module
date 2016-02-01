@@ -1,6 +1,4 @@
 --- # AMM
-name: AMM
-
 interface: AMM.html
 
 hardware:
