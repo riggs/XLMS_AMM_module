@@ -38,7 +38,7 @@ var session = {
     scenario: "SCENARIO_1",
     log: [],
     attached_modules: [],
-    required_modules: ['XLMS'],
+    required_modules: ['XLMS', "instructor", "virtual_patient", "patient_monitor", "IV_arm", /*"IV_infusion",*/ "airway", "esophagus", "RFID_proximity", "smell_machine", "MATT_legs", "ASL5000"],
 };
 
 
@@ -217,6 +217,7 @@ function scenario_init (scenario) {
     dont_spam('REGISTER=MODULES');
     dont_spam('REGISTER=SIM_TIME');
     dont_spam('REGISTER=STATUS');
+    dont_spam('REGISTER=PROX');
     PHYSIOLOGY_VARIABLES.forEach(variable => dont_spam('REGISTER=' + variable));
     dont_spam('ADMIN=LOAD_SCENARIO:' + scenario);
     dont_spam('ADMIN=REQUEST_STATUS');
