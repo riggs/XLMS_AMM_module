@@ -23,8 +23,8 @@ physiology_data.keys = Object.keys(physiology_data);
 
 
 let ui = {
-    start_sim: null,
-    end_sim: null,
+    //start_sim: null,
+    //end_sim: null,
     log: null,
     physiology: null,
 };
@@ -113,7 +113,7 @@ function _in_startup (messages) {
                         session.required_modules.every(module => session.attached_modules.includes(module)))
                     {
                         logger("System Ready");
-                        ui.start_sim.disabled = false;
+                        //ui.start_sim.disabled = false;
                         POLLER_CALLBACK = _scenario_running;
                     } else {
                         var missing = [];
@@ -191,16 +191,16 @@ function queue_AMM_message (message, delay) {
 
 function on_sim_start () {
     logger("Starting Scenario.");
-    ui.end_sim.disabled = false;
-    ui.start_sim.disabled = true;
+    //ui.end_sim.disabled = false;
+    //ui.start_sim.disabled = true;
     POLLER_CALLBACK = _scenario_running;
 }
 
 
 function on_sim_end () {
     logger("Ending Scenario.");
-    ui.end_sim.disabled = true;
-    ui.start_sim.disabled = true;
+    //ui.end_sim.disabled = true;
+    //ui.start_sim.disabled = true;
     setTimeout(kill_poller, 1000);
 }
 
@@ -254,6 +254,7 @@ function ui_init () {
         ui[k] = element;
     }
 
+    /*
     ui.start_sim.addEventListener('click', () => {
         queue_AMM_message("ADMIN=START_SIM");
         on_sim_start();
@@ -263,6 +264,7 @@ function ui_init () {
         queue_AMM_message("ADMIN=FORCE_EXIT");
         on_sim_end();
     });
+    */
 
     PHYSIOLOGY_VARIABLES.forEach(variable => {
         var div = document.createElement('div');
