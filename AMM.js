@@ -34,19 +34,14 @@ var POLLER_CALLBACK = null;
 var POLLER_ID = null;
 
 
+var ERRORS = {};
+
+
 var session = {
     log: [],
     attached_modules: [],
     required_modules: []
 };
-/*
-{
-    scenario: "SCENARIO_1",
-    log: [],
-    attached_modules: [],
-    required_modules: ['XLMS', "instructor", "virtual_patient", "patient_monitor", "IV_arm", "IV_infusion", "airway", "esophagus", "RFID_proximity", "smell_machine", "MATT_legs", "ASL5000"],
-};
-*/
 
 
 session.IP = "128.0.0.1";
@@ -114,6 +109,7 @@ function _in_startup (messages) {
                     {
                         logger("System Ready");
                         //ui.start_sim.disabled = false;
+                        session.wrapper_window.postMessage({name: "ready"}, session.wrapper_window_origin);
                         POLLER_CALLBACK = _scenario_running;
                     } else {
                         var missing = [];
@@ -127,7 +123,7 @@ function _in_startup (messages) {
                             queue_AMM_message("ERROR=MISSING:" + module);
                         });
                         queue_AMM_message('ADMIN=REQUEST_MODULES', 500);
-                        queue_AMM_message('ADMIN=REQUEST_STATUS', 1000);
+                        //queue_AMM_message('ADMIN=REQUEST_STATUS', 1000);
                     }
                 }
                 break;
@@ -140,6 +136,35 @@ function _in_startup (messages) {
                     case "FORCE_EXIT":
                         on_sim_end();
                         break;
+                }
+                break;
+            case "ERROR":
+                if (value.startsWith("MISSING:")) {
+                    let module = value.split(":")[1];
+                    if (ERRORS[module] === undefined) {
+                        session.wrapper_window.postMessage({
+                            name: "error",
+                            id: module,
+                            message: "Missing module: " + module,
+                            types: ["retry", "ignore", "exit"]
+                        }, session.wrapper_window_origin);
+                        ERRORS[module] = {
+                            retry: () => {
+                                delete ERRORS[module];
+                                queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
+                            },
+                            ignore: () => {
+                                var index = session.required_modules.indexOf(module);
+                                if (index >= 0) {
+                                    session.required_modules.splice(index, 1);
+                                }
+                            },
+                            exit: () => {
+                                queue_AMM_message("ADMIN=FORCE_EXIT");
+                                on_sim_end();
+                            }
+                        }
+                    }
                 }
                 break;
             default:
@@ -283,11 +308,14 @@ function init () {
 
     window.addEventListener('message', message => {
         console.log(message);
-        var other_window = message.source;
+        session.wrapper_window = message.source;
+        let location = document.createElement("a");
+        location.href = session.wrapper_window.src;
+        session.wrapper_window_origin = location.origin;
         switch (message.data.name) {
 
             case "session":
-                var _session = message.data.value;
+                let _session = message.data.value;
                 for (var item in _session) {
                     session[item] = _session[item];
                 }
@@ -295,6 +323,10 @@ function init () {
                 session.IP = session.configuration.ip_address;
                 session.required_modules = _session.hardware[0].deviceID.split(",");
                 scenario_init(_session.configuration.scenario);
+                break;
+
+            case "error_response":
+                ERRORS[message.data.id][message.data.error_type].call(window);
                 break;
 
             case "start_exercise":
