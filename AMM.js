@@ -295,7 +295,7 @@ function init () {
                 for (var item in _session) {
                     session[item] = _session[item];
                 }
-                session.required_modules = _session.hardware.deviceID.split(",");
+                session.required_modules = _session.hardware[0].deviceID.split(",");
                 scenario_init(session.scenario);
                 break;
 
