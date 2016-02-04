@@ -325,7 +325,11 @@ function init () {
                 }
                 console.log(session);
                 session.IP = session.configuration.ip_address;
-                session.required_modules = _session.hardware[0].deviceID.split(",");
+                for (var config in session.configuration) {
+                    if (session.configuration[config] === "Required") {
+                        session.required_modules.push(config);
+                    }
+                }
                 scenario_init(_session.configuration.scenario);
                 break;
 
