@@ -38,6 +38,7 @@ var ERRORS = {};
 
 
 var session = {
+    wrapper_window_origin: "chrome-extension://fpfmfigelfacjdeonglpnkgbilpbopdi",
     log: [],
     attached_modules: [],
     required_modules: []
@@ -120,7 +121,34 @@ function _in_startup (messages) {
                         });
                         missing.forEach(module => {
                             logger("Missing " + module + " module.");
-                            queue_AMM_message("ERROR=MISSING:" + module);
+                            if (ERRORS[module] === undefined) {
+                                ERRORS[module] = {
+                                    retry: () => {
+                                        console.log("retry on " + module);
+                                        delete ERRORS[module];
+                                        queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
+                                    },
+                                    ignore: () => {
+                                        console.log("ignore on " + module);
+                                        var index = session.required_modules.indexOf(module);
+                                        if (index >= 0) {
+                                            session.required_modules.splice(index, 1);
+                                        }
+                                    },
+                                    exit: () => {
+                                        console.log("exit on " + module);
+                                        queue_AMM_message("ADMIN=FORCE_EXIT");
+                                        on_sim_end();
+                                    }
+                                };
+                                session.wrapper_window.postMessage({
+                                    name: "error",
+                                    id: module,
+                                    message: "Missing module: " + module,
+                                    types: ["retry", "ignore", "exit"]
+                                }, session.wrapper_window_origin);
+                                queue_AMM_message("ERROR=MISSING:" + module);
+                            }
                         });
                         queue_AMM_message('ADMIN=REQUEST_MODULES', 500);
                         //queue_AMM_message('ADMIN=REQUEST_STATUS', 1000);
@@ -141,30 +169,7 @@ function _in_startup (messages) {
             case "ERROR":
                 if (value.startsWith("MISSING:")) {
                     let module = value.split(":")[1];
-                    if (ERRORS[module] === undefined) {
-                        session.wrapper_window.postMessage({
-                            name: "error",
-                            id: module,
-                            message: "Missing module: " + module,
-                            types: ["retry", "ignore", "exit"]
-                        }, session.wrapper_window_origin);
-                        ERRORS[module] = {
-                            retry: () => {
-                                delete ERRORS[module];
-                                queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
-                            },
-                            ignore: () => {
-                                var index = session.required_modules.indexOf(module);
-                                if (index >= 0) {
-                                    session.required_modules.splice(index, 1);
-                                }
-                            },
-                            exit: () => {
-                                queue_AMM_message("ADMIN=FORCE_EXIT");
-                                on_sim_end();
-                            }
-                        }
-                    }
+                    console.log(module);
                 }
                 break;
             default:
@@ -309,9 +314,6 @@ function init () {
     window.addEventListener('message', message => {
         console.log(message);
         session.wrapper_window = message.source;
-        let location = document.createElement("a");
-        location.href = session.wrapper_window.src;
-        session.wrapper_window_origin = location.origin;
         switch (message.data.name) {
 
             case "session":
