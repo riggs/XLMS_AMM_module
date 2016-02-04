@@ -350,7 +350,7 @@ function init () {
                         session: session.session_id,
                         device: "AMM:" + session.attached_modules.join(),
                         start_time: session.log[0][0] / 1000 | 0,
-                        elapsed_time: (session.log[-1][0] - session.log[0][0]) / 1000 | 0,
+                        elapsed_time: (session.log[session.log.length-1][0] - session.log[0][0]) / 1000 | 0,
                         events: session.log,
                         success: evaluate(),
                         configuration: session.configuration,
