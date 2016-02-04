@@ -35,14 +35,21 @@ var POLLER_ID = null;
 
 
 var session = {
+    log: [],
+    attached_modules: [],
+    required_modules: []
+};
+/*
+{
     scenario: "SCENARIO_1",
     log: [],
     attached_modules: [],
-    required_modules: ['XLMS', "instructor", "virtual_patient", "patient_monitor", "IV_arm", /*"IV_infusion",*/ "airway", "esophagus", "RFID_proximity", "smell_machine", "MATT_legs", "ASL5000"],
+    required_modules: ['XLMS', "instructor", "virtual_patient", "patient_monitor", "IV_arm", "IV_infusion", "airway", "esophagus", "RFID_proximity", "smell_machine", "MATT_legs", "ASL5000"],
 };
+*/
 
 
-session.IP = "192.168.1.101";
+session.IP = "128.0.0.1";
 
 
 var logger = function (message) {
@@ -52,7 +59,7 @@ var logger = function (message) {
 
 
 function get_AMM_messages(callback) {
-    fetch("http://" + session.IP + "/refresh_xlms", {
+    fetch("http://" + session.configuration.ip_address + "/refresh_xlms", {
         method: 'GET'
     })
         .then(response => response.ok ? response.json() : [["NOMSGS"]],
@@ -279,9 +286,15 @@ function init () {
         switch (message.data.name) {
 
             case "session":
-                console.log(message.data.value);
-                session.XLMS_data = message.data.value;
-                scenario_init(session.scenario);    // FIXME: Actual scenario data location.
+                console.log(Date.now());
+                console.log(session);
+                var _session = message.data.value;
+                console.log(_session);
+                for (var item in _session) {
+                    session[item] = _session[item];
+                }
+                session.required_modules = _session.hardware.deviceID.split(",");
+                scenario_init(session.scenario);
                 break;
 
             case "start_exercise":
@@ -304,7 +317,7 @@ function init () {
         }
     });
 
-    scenario_init(session.scenario);
+    //scenario_init(session.scenario);
 
 }
 
