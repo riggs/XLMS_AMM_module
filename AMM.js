@@ -89,7 +89,6 @@ function _scenario_running (messages) {
 function _in_startup (messages) {
     messages.forEach(msg => {
         if (msg === "NOMSGS") {return;}
-        console.log(msg);
         var split = msg.split('='),
             prefix = split[0],
             value = split[1];
@@ -118,20 +117,19 @@ function _in_startup (messages) {
                             }
                         });
                         missing.forEach(module => {
-                            logger("Missing " + module + " module.");
                             if (ERRORS[module] === undefined) {
                                 ERRORS[module] = {
                                     retry: () => {
                                         console.log("retry on " + module);
                                         delete ERRORS[module];
-                                        queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
+                                        queue_AMM_message("ADMIN=REQUEST_STATUS", 300);
                                     },
                                     ignore: () => {
                                         console.log("ignore on " + module);
                                         var index = session.required_modules.indexOf(module);
                                         if (index >= 0) {
                                             session.required_modules.splice(index, 1);
-                                            queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
+                                            queue_AMM_message("ADMIN=REQUEST_STATUS", 300);
                                         }
                                     },
                                     exit: () => {
