@@ -174,7 +174,6 @@ function queue_AMM_message (message, delay) {
     console.log("Queuing: " + message);
 
     setTimeout(() => {
-        // FIXME: Actual IP data location.
         fetch('http://' + session.IP + "/action_xlms", {
             method: 'POST',
             headers: {
@@ -288,15 +287,14 @@ function init () {
         switch (message.data.name) {
 
             case "session":
-                console.log(Date.now());
-                console.log(session);
                 var _session = message.data.value;
-                console.log(_session);
                 for (var item in _session) {
                     session[item] = _session[item];
                 }
+                console.log(session);
+                session.IP = session.configuration.ip_address;
                 session.required_modules = _session.hardware[0].deviceID.split(",");
-                scenario_init(session.scenario);
+                scenario_init(_session.configuration.scenario);
                 break;
 
             case "start_exercise":
