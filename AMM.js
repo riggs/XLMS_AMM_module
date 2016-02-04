@@ -73,10 +73,8 @@ function _scenario_running (messages) {
         var split = msg.split('='),
             prefix = split[0],
             value = split[1];
-        if (msg === "ADMIN=FORCE_EXIT") {
+        if (msg === "ADMIN=FORCE_EXIT" || msg === "ACT=STOP") {
             on_sim_end();
-        } else if (msg === "ERROR=NO_IV") {
-            logger("IV not in place.");
         } else if (prefix !== "SIM_TIME") {
             if (physiology_data.keys.includes(prefix)) {
                 physiology_data[prefix] = value;
@@ -133,6 +131,7 @@ function _in_startup (messages) {
                                         var index = session.required_modules.indexOf(module);
                                         if (index >= 0) {
                                             session.required_modules.splice(index, 1);
+                                            queue_AMM_message("ADMIN=REQUEST_STATUS", 1000);
                                         }
                                     },
                                     exit: () => {
@@ -273,6 +272,12 @@ function physiology_display () {
 }
 
 
+function evaluate () {
+    // TODO: Iterate through session.log, look for good/bad things.
+    return .42;
+}
+
+
 function ui_init () {
 
     for (var k in ui) {
@@ -312,7 +317,6 @@ function init () {
     ui_init();
 
     window.addEventListener('message', message => {
-        console.log(message);
         session.wrapper_window = message.source;
         switch (message.data.name) {
 
@@ -342,6 +346,19 @@ function init () {
                 break;
 
             case "results_request":
+                session.wrapper_window.postMessage({
+                    name: "results",
+                    results: {
+                        session: session.session_id,
+                        device: "AMM:" + session.attached_modules.join(),
+                        start_time: session.log[0][0] / 1000 | 0,
+                        elapsed_time: (session.log[-1][0] - session.log[0][0]) / 1000 | 0,
+                        events: session.log,
+                        success: evaluate(),
+                        configuration: session.configuration,
+                        metrics: session.metrics
+                    }
+                }, session.wrapper_window_origin);
                 // TODO: Evaluate scenario data.
                 break;
 
